@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
-import { useCart } from "../contexts/CartContext";
+import { CartProvider as useCart } from "../contexts/CartContext";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();

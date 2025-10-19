@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useCart } from "../contexts/CartContext";
+import { CartProvider as useCart } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from '../contexts/AuthContext';
+import { AuthProvider as useAuth } from '../contexts/AuthContext';
 
 const Cart = ({ initialItems = [] }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
 
-  const { cartItems, removeProductFromCart, clearCart } = useCart();
+  const { cartItems, clearCart } = useCart();
 
   const total = cartItems.reduce((s, it) => s + it.price * it.quantity, 0);
 

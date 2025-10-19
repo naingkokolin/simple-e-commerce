@@ -1,4 +1,4 @@
-import { useCart } from "../contexts/CartContext";
+import { CartProvider as useCart } from "../contexts/CartContext";
 import { useState } from "react";
 import Button from "../components/Button";
 

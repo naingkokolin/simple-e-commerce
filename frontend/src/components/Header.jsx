@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import logo from "../assets/logo.png";
-import { useAuth } from "../contexts/AuthContext";
+import { AuthProvider as useAuth } from "../contexts/AuthContext";
 
 const Header = () => {
   const location = useLocation();

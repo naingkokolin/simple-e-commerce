@@ -19,7 +19,6 @@ import Maintenance from "./pages/Maintenance";
 import NewProduct from "./pages/NewProduct";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
-// import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
   return (

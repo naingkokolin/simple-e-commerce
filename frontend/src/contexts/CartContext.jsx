@@ -1,18 +1,13 @@
-import { useState, createContext, useContext } from "react";
-import { useAuth } from "./AuthContext";
+import { useState } from "react";
+import { CartContext } from "../utils/cartContext-utils";
+import { AuthProvider as useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-const CartContext = createContext();
-
-export const useCart = () => {
-  return useContext(CartContext);
-};
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const isLoggedInUser = user !== null;
 
   const addToCart = (product) => {
@@ -31,7 +26,7 @@ export const CartProvider = ({ children }) => {
         setCartItems([...cartItems, { ...product, quantity: 1 }]);
       }
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 

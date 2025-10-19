@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import Button from "../components/Button";
-import { useCart } from "../contexts/CartContext";
+import { CartProvider as useCart } from "../contexts/CartContext";
 import ProductCard from "../components/ProductCard";
 
 const ProductDetail = () => {
