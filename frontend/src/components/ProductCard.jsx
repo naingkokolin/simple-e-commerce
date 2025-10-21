@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
-import { CartProvider as useCart } from "../contexts/CartContext";
+import { CartContext } from "../contexts/CartContext";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { addToCart } = useCart();
+  const { addToCart } = useContext(CartContext);
 
   return (
     <div className="max-w-sm mt-6 rounded overflow-hidden shadow-lg p-6 bg-white transition-transform transform hover:scale-105 shadow-gray-400 h-90 w-80 flex flex-col justify-between">

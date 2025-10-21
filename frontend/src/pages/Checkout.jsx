@@ -1,9 +1,9 @@
-import { CartProvider as useCart } from "../contexts/CartContext";
-import { useState } from "react";
+import { CartContext } from "../contexts/CartContext";
+import { useContext, useState } from "react";
 import Button from "../components/Button";
 
 const Checkout = () => {
-  const { addToCart, reduceQuantity, cartItems, clearCart } = useCart();
+  const { addToCart, reduceQuantity, cartItems, clearCart } = useContext(CartContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -22,10 +22,10 @@ const Checkout = () => {
       return;
     }
 
-    console.log("Placing order...", {
-      items: cartItems,
-      customerInfo: formData,
-    });
+    // console.log("Placing order...", {
+    //   items: cartItems,
+    //   customerInfo: formData,
+    // });
 
     alert("Order placed successfully!");
     clearCart();

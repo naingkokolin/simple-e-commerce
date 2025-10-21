@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { AuthProvider as useAuth } from "../contexts/AuthContext";
+import { AuthContext } from "../contexts/AuthContext";
 import Button from "../components/Button";
 import AlertBox from "../components/AlertBox";
 
@@ -10,7 +10,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { login, errorMessage } = useAuth();
+  const { login, errorMessage } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
