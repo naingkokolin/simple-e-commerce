@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import axios from 'axios';
+import axios from "axios";
 import AlertBox from "../components/AlertBox";
 
 const SignUpPage = () => {
@@ -15,7 +15,7 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ const SignUpPage = () => {
     try {
       const response = await axios.post(`${apiUrl}api/user/signup`, formData);
       setIsSuccess(true);
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       if (error.response && error.response.data) {
         setIsError(true);
@@ -66,7 +66,7 @@ const SignUpPage = () => {
                 id="username"
                 name="username"
                 type="text"
-                autoComplete="usernname"
+                autoComplete="username"
                 required
                 value={formData.username}
                 onChange={handleChange}
@@ -154,14 +154,17 @@ const SignUpPage = () => {
           </p>
         </div>
 
-        {isSuccess && 
-          <AlertBox type={'success'} title={'Success'} message={'Sign up successfully'} />
-        }
+        {isSuccess && (
+          <AlertBox
+            type={"success"}
+            title={"Success"}
+            message={"Sign up successfully"}
+          />
+        )}
 
-        {isError && 
-          <AlertBox type={'error'} title={'Error'} message={errorMessage} />
-        }
-
+        {isError && (
+          <AlertBox type={"error"} title={"Error"} message={errorMessage} />
+        )}
       </div>
     </div>
   );

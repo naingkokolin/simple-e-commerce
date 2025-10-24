@@ -1,11 +1,8 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const router = express.Router();
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
-const TOKEN_EXPIRY = '2h';
-
+const TOKEN_EXPIRY = "2h";
 
 function sendTokenResponse(res, user) {
   const token = jwt.sign(
@@ -21,7 +18,7 @@ function sendTokenResponse(res, user) {
     maxAge: 2 * 60 * 60 * 1000,
   });
 
-  res.json({ 
+  res.json({
     success: true,
     role: user.role,
     user: {
@@ -34,47 +31,46 @@ function sendTokenResponse(res, user) {
   });
 }
 
-// sign up
-router.post('/signup', async (req, res) => {
+exports.createAccount = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email already in use' });
+      return res.status(400).json({ message: "Email already in use" });
     }
 
     const SALT = await bcrypt.genSalt();
 
     const hashedPassword = await bcrypt.hash(password, SALT);
-    const user = await User.create({ username, email, password: hashedPassword });
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
     sendTokenResponse(res, user);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
-});
+};
 
-// login
-router.post('/login', async (req, res) => {
+exports.loginAccount = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) return res.status(400).json({ message: 'Missing email or password' });
+  if (!email || !password)
+    return res.status(400).json({ message: "Missing email or password" });
 
   const user = await User.findOne({ email });
-  if (!user) return res.status(401).json({ message: 'Email NOT Found!' });
+  if (!user) return res.status(401).json({ message: "Email NOT Found!" });
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch)
-    return res.status(401).json({ message: 'WRONG Password!' });
+  if (!isMatch) return res.status(401).json({ message: "WRONG Password!" });
 
   sendTokenResponse(res, user);
-});
+};
 
-// logout
-router.post('/logout', (req, res) => {
+exports.logoutAccount = (req, res) => {
   res.clearCookie("token");
   res.json({ success: true, message: "Logged out successfully" });
-});
-
-module.exports = router;
+};

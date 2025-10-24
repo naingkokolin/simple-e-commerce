@@ -1,34 +1,46 @@
 import { CartContext } from "../contexts/CartContext";
 import { useContext, useState } from "react";
 import Button from "../components/Button";
+import axios from "axios";
 
 const Checkout = () => {
-  const { addToCart, reduceQuantity, cartItems, clearCart } = useContext(CartContext);
+  const { addToCart, reduceQuantity, cartItems, clearCart } =
+    useContext(CartContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     address: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const apiUrl = import.meta.env.VITE_BACKEND_API;
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handlePlaceOrder = (e) => {
+  const handleOrder = async (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       alert("Your cart is empty. Please add items before checking out.");
       return;
     }
 
-    // console.log("Placing order...", {
-    //   items: cartItems,
-    //   customerInfo: formData,
-    // });
+    try {
+      const response = await axios.post(
+        `${apiUrl}api/order/create-order`,
+        formData,
+        { withCredentials: true }
+      );
+    } catch (error) {
+      if (error.response && error.response.data)
+        setErrorMessage(error.response || error.response.data);
+    }
 
-    alert("Order placed successfully!");
-    clearCart();
+    // alert("Order placed successfully!");
+    // clearCart();
 
     // navigate to a confirmation page
     // navigate("/order-confirmation");
@@ -62,8 +74,8 @@ const Checkout = () => {
                   <h3 className="font-semibold">{item.title}</h3>
                 </div>
                 <p className="font-medium">
-                  {/* ${(item.price * item.quantity).toFixed(2)} */}
-                  $ <b>{item.price}</b>
+                  {/* ${(item.price * item.quantity).toFixed(2)} */}${" "}
+                  <b>{item.price}</b>
                 </p>
                 <Button text="-" onClick={() => reduceQuantity(item)} />
                 <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
@@ -95,7 +107,7 @@ const Checkout = () => {
       {/* Checkout Form Section */}
       <div className="md:w-1/2 bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-4">Shipping Information</h2>
-        <form onSubmit={handlePlaceOrder} className="space-y-4">
+        <form onSubmit={handleOrder} className="space-y-4">
           <div>
             <label
               htmlFor="name"

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import Button from "../components/Button";
-import { CartProvider as useCart } from "../contexts/CartContext";
+import { CartContext } from "../contexts/CartContext";
 import ProductCard from "../components/ProductCard";
 
 const ProductDetail = () => {
@@ -13,14 +13,12 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const apiUrl = import.meta.env.VITE_BACKEND_API;
 
-  const { addToCart } = useCart();
+  const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(
-          `${apiUrl}api/products/${id}`
-        );
+        const response = await fetch(`${apiUrl}api/products/${id}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
