@@ -9,43 +9,14 @@ const Checkout = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    address: "",
+    paymentMethod: "",
+    shippingAddress: "",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
-
   const apiUrl = import.meta.env.VITE_BACKEND_API;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleOrder = async (e) => {
-    e.preventDefault();
-    if (cartItems.length === 0) {
-      alert("Your cart is empty. Please add items before checking out.");
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${apiUrl}api/order/create-order`,
-        formData,
-        { withCredentials: true }
-      );
-    } catch (error) {
-      if (error.response && error.response.data)
-        setErrorMessage(error.response || error.response.data);
-    }
-
-    // alert("Order placed successfully!");
-    // clearCart();
-
-    // navigate to a confirmation page
-    // navigate("/order-confirmation");
-  };
-
+  // Calculate order totals
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -53,6 +24,51 @@ const Checkout = () => {
   const tax = subtotal * 0.08;
   const shipping = cartItems.length < 1 || subtotal > 75 ? 0 : 5;
   const total = subtotal + tax + shipping;
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Handle order creation
+  const handleOrder = async (e) => {
+    e.preventDefault();
+
+    if (cartItems.length === 0) {
+      alert("Your cart is empty. Please add items before checking out.");
+      return;
+    }
+
+    // Build the order data to send to backend
+    const orderData = {
+      items: cartItems.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      shippingAddress: formData.shippingAddress,
+      paymentMethod: formData.paymentMethod,
+      totalPrice: total,
+    };
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}api/order/create-order`,
+        orderData,
+        { withCredentials: true }
+      );
+
+      alert("Order placed successfully!");
+      clearCart();
+      console.log("Order response:", response.data);
+    } catch (error) {
+      console.error("Error placing order:", error);
+      if (error.response && error.response.data?.message)
+        setErrorMessage(error.response.data.message);
+      else setErrorMessage("Failed to place order. Please try again.");
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 flex flex-col md:flex-row gap-8">
@@ -73,10 +89,7 @@ const Checkout = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold">{item.title}</h3>
                 </div>
-                <p className="font-medium">
-                  {/* ${(item.price * item.quantity).toFixed(2)} */}${" "}
-                  <b>{item.price}</b>
-                </p>
+                <p className="font-medium">${item.price}</p>
                 <Button text="-" onClick={() => reduceQuantity(item)} />
                 <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                 <Button text="+" onClick={() => addToCart(item)} />
@@ -122,9 +135,10 @@ const Checkout = () => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
             />
           </div>
+
           <div>
             <label
               htmlFor="email"
@@ -139,26 +153,48 @@ const Checkout = () => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
             />
           </div>
+
           <div>
             <label
-              htmlFor="address"
+              htmlFor="paymentMethod"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Payment Method
+            </label>
+            <input
+              type="text"
+              id="paymentMethod"
+              name="paymentMethod"
+              value={formData.paymentMethod}
+              onChange={handleInputChange}
+              required
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="shippingAddress"
               className="block text-sm font-medium text-gray-700"
             >
               Shipping Address
             </label>
             <textarea
-              id="address"
-              name="address"
-              value={formData.address}
+              id="shippingAddress"
+              name="shippingAddress"
+              value={formData.shippingAddress}
               onChange={handleInputChange}
-              required
               rows="3"
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
             ></textarea>
           </div>
+
+          {errorMessage && (
+            <p className="text-red-500 text-sm">{errorMessage}</p>
+          )}
 
           <Button text="Place Order" type="submit" />
         </form>

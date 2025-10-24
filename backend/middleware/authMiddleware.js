@@ -1,25 +1,29 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // optional if you want to fetch full user data
+const User = require("../models/User");
 
-// Protect routes (any logged-in user)
+// Protect routes — for any logged-in user
 const protect = async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token)
-    return res.status(401).json({ message: "No token, authorization denied" });
-
   try {
+    // ✅ Get token from cookies
+    const token = req.cookies.token;
+    console.log(token);
+    // If no token, deny access
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "No token, authorization denied" });
+    }
+
+    // ✅ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User Not Found" });
 
-    // Option 1: If you stored user data in the token directly
-    req.user = decoded;
-
-    // Option 2: If you want to fetch user from DB
-    // req.user = await User.findById(decoded.id).select("-password");
-
+    req.user = user;
+    console.log("middleware test", user);
     next();
   } catch (error) {
+    console.error("Auth error:", error.message);
     return res.status(403).json({ message: "Invalid or expired token" });
   }
 };
